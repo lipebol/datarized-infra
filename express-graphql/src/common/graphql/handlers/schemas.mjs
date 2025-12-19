@@ -3,31 +3,7 @@ import { buildSchema } from 'graphql'
 export const schemas = buildSchema(`
     scalar Date
 
-    interface Errors {
-        error: String!
-        message: String!
-        status_code: Int!
-    }
-
-    type NotFound implements Errors {
-        error: String!
-        message: String!
-        status_code: Int!
-    }
-
-    type BadRequest implements Errors {
-        error: String!
-        message: String!
-        status_code: Int!
-    }
-
-    type InternalError implements Errors {
-        error: String!
-        message: String!
-        status_code: Int!
-    }
-
-    type Unauthorized implements Errors {
+    type Errors {
         error: String!
         message: String!
         status_code: Int!
@@ -49,46 +25,59 @@ export const schemas = buildSchema(`
         type: String
     }
 
-    type spotifExGenresFields {
+
+
+    type spotifExGenreFields {
+        id: ID!
         name: String
         about: String
     }
 
-    type spotifExArtistsFields {
+
+    type spotifExArtistId { id: ID! }
+    type spotifExArtistFields {
+        id: ID!
         artistid: String
         name: String
         profile: String
         followers: Int
         images: [_ImageField_] 
-        genres: [spotifExGenresFields]
+        genres: [spotifExGenreFields]
     }
+    union spotifExArtist = spotifExArtistId | spotifExArtistFields
+    type spotifExArtists { data: [spotifExArtistFields] }
+    union spotifExArtists_ = spotifExArtists | Info | Errors
 
-    type spotifExArtists {
-        data: [spotifExArtistsFields]
-    }
 
-    type spotifExAlbumsFields {
+
+    type spotifExAlbumId { id: ID! }
+    type spotifExAlbumFields {
+        id: ID!
         albumid: String
         name: String
         album_type: String
         release_date: String
         available_markets: [String]
+        no_available_markets: [String]
         external_url: String
         images: [_ImageField_]
         total_tracks: Int
         copyrights: [_CopyrightField_]
         label: String
     }
+    union spotifExAlbum = spotifExAlbumId | spotifExAlbumFields
+    type spotifExAlbums { data: [spotifExAlbumFields] }
+    union spotifExAlbums_ = spotifExAlbums | Info | Errors
 
-    type spotifExAlbums {
-        data: [spotifExAlbumsFields]
-    }
 
-    type spotifExTracksFields {
+    
+    type spotifExTrackId { id: ID! }
+    type spotifExTrackFields {
+        id: ID!
         trackid: String
         name: String
-        album: spotifExAlbumsFields
-        artists: [spotifExArtistsFields]
+        album: spotifExAlbum
+        artists: [spotifExArtist]
         url: String
         duration_ms: String
         popularity: Int
@@ -97,50 +86,47 @@ export const schemas = buildSchema(`
         disc_number: Int
         isrc: String
     }
-
-    type spotifExTracks {
-        data: [spotifExTracksFields]
-    }
+    union spotifExTrack = spotifExTrackId | spotifExTrackFields | Errors
+    type spotifExTracks { data: [spotifExTrackFields] }
+    union spotifExTracks_ = spotifExTracks | Info | Errors
     
-    type spotifExDaylistsFields {
-        track: spotifExTracksFields
+
+
+    type spotifExDaylistFields {
+        id: ID!
+        track: spotifExTrackFields
         date: String
         listen: Int
     }
+    type spotifExDaylists { data: [spotifExDaylistFields] }
+    union spotifExDaylists_ = spotifExDaylists | Info | Errors
 
-    type spotifExDaylists {
-        data: [spotifExDaylistsFields]
-    }
-
-    union spotifExArtistsResponse = spotifExArtists | Info | NotFound | BadRequest | InternalError | Unauthorized
-    union spotifExAlbumsResponse = spotifExAlbums | Info | NotFound | BadRequest | InternalError | Unauthorized
-    union spotifExTracksResponse = spotifExTracks | Info | NotFound | BadRequest | InternalError | Unauthorized
-    union spotifExDaylistsResponse = spotifExDaylists | Info | NotFound | BadRequest | InternalError | Unauthorized
-
+    
+    
     type Query {
-        spotifyAPI(trackid: String): spotifExTracksResponse!
+        spotifyAPI(trackid: String): spotifExTrack!
 
 
         spotifExArtists(
             artistid: String, name: String, page: Int, 
             info: Boolean, lookup: Boolean
-        ): spotifExArtistsResponse!
+        ): spotifExArtists_!
 
 
         spotifExAlbums(
             albumid: String, name: String, page: Int, 
             info: Boolean, lookup: Boolean
-        ): spotifExAlbumsResponse!
+        ): spotifExAlbums_!
 
 
         spotifExTracks(
             trackid: String, name: String, page: Int, 
             info: Boolean, lookup: Boolean
-        ): spotifExTracksResponse!
+        ): spotifExTracks_!
 
         
         spotifExDaylists(
             date: String, page: Int, info: Boolean, lookup: Boolean
-        ): spotifExDaylistsResponse!
+        ): spotifExDaylists_!
     }
 `)
