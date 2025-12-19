@@ -14,7 +14,10 @@ mongoose.set(
     }
 )
 
-export const mongooseAddons = { collation: { locale: 'en', strength: 2 }, versionKey: false }
+export const mongooseAddons = { 
+    collation: { locale: 'en', strength: 2 }, versionKey: false, 
+    toJSON: { virtuals: true }, toObject: { virtuals: true }
+}
 
 export const mongooseSpotifEx = mongoose.createConnection(cryptHandler(mongodb)).useDb('spotifEx')
 
