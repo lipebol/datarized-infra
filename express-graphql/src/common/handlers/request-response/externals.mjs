@@ -16,7 +16,7 @@ export class Externals {
                     method: 'POST', body: {
                         query: `query { 
                     ${type}(${filter}: \"${id}\", lookup: false) 
-                    { ...on ${type} { data { ${filter} } } 
+                    { ...on ${type} { data { id ${filter} } } 
                     ...on Errors { error message status_code } }}`
                     }
                 }
@@ -24,11 +24,10 @@ export class Externals {
         ]
 
         let track = await Externals.get(
-            graphql, query(handler.about.type, handler.filter, handler.params)
-        )
+            graphql, query('spotifExTracks', handler.filter, handler.params)
+        ).then(tracks => tracks.data['spotifExTracks'])
 
-
-        if (!track.data[handler.about.type]?.data) {
+        if (!track?.data) {
 
             track = await Externals.get(spotify, { token: handler.authExternal })
 
@@ -38,15 +37,17 @@ export class Externals {
                     duration_ms: track.duration_ms, disc_number: track.disc_number,
                     track_number: track.track_number, popularity: track.popularity,
                     explicit: track.explicit, isrc: track.external_ids?.isrc,
+                    __typename: 'spotifExTrackFields'
                 }
 
 
             if (!data.error && handler.fields.includes('album')) {
                 let album = await Externals.get(
                     graphql, query('spotifExAlbums', 'albumid', track.album?.id)
-                )
+                ).then(albums => albums.data['spotifExAlbums'])
 
-                if (!album.data['spotifExAlbums']?.data) {
+
+                if (!album?.data) {
                     album = await Externals.get(
                         track.album?.href, { token: handler.authExternal }
                     )
@@ -61,9 +62,12 @@ export class Externals {
                             external_url: album.external_urls?.spotify,
                             total_tracks: album.total_tracks,
                             album_type: album.album_type,
-                            copyrights: album.copyrights
+                            copyrights: album.copyrights,
+                            __typename: 'spotifExAlbumFields'
                         }
                     }
+                } else {
+                    data.album = { id: album?.data?.[0]?.id, __typename: 'spotifExAlbumId' }
                 }
             }
 
@@ -74,7 +78,7 @@ export class Externals {
                     graphql, query('spotifExArtists', 'artistid', ids.join('|'))
                 ).then(artists => artists.data['spotifExArtists'])
 
-                artists = artists?.error ? track.artists?.map(artist => artist.href) :
+                let newartists = artists?.error ? track.artists?.map(artist => artist.href) :
                     (() => {
                         ids = ids.filter(
                             artist => !new Set(
@@ -87,9 +91,13 @@ export class Externals {
                             )?.map(artist => artist.href)
                     })()
 
-                if (artists) {
-                    artists = await Promise.all(
-                        artists.map(
+                let savedartists = !artists?.data ? null : artists?.data?.map(
+                    ({ id }) => ({ id, __typename: 'spotifExArtistId' })
+                )
+
+                if (newartists) {
+                    newartists = await Promise.all(
+                        newartists.map(
                             async (artist) => {
                                 artist = await Externals.get(
                                     artist, { token: handler.authExternal }
@@ -99,22 +107,24 @@ export class Externals {
                                     profile: artist.external_urls?.spotify,
                                     followers: artist.followers?.total,
                                     images: artist.images, genres: artist.genres
-                                        .map((genre) => { return { name: genre, about: '' } })
+                                        .map((genre) => { return { name: genre, about: '' } }),
+                                    __typename: 'spotifExArtistFields'
                                 }
                             }
                         )
                     )
-                    if (artists.status_code) { data = { error: artists } }
-                    else { data.artists = artists }
-                }
+                    if (newartists?.status_code) { data = { error: newartists } }
+                    else if (savedartists) { data.artists = [...savedartists, ...newartists] }
+                    else { data.artists = newartists }
+                } else { data.artists = savedartists }
             }
             return data
-        }
+        } else { return { id: track?.data?.[0]?.id, __typename: 'spotifExTrackId' } }
     }
 
 
     static async get(endpoint, { method, body, token }) {
-        let args = new Object()
+        let args = { signal : AbortSignal.timeout(20000) }
         if (method) { args.method = method }
         if (body) {
             args.headers = { 'Content-Type': 'application/json' }
