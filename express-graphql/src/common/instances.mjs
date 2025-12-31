@@ -1,6 +1,6 @@
 import { cryptHandler } from './handlers/crypt.mjs'
 import { mongoose } from 'mongoose'
-// import { Sequelize } from 'sequelize'
+import { Sequelize } from 'sequelize'
 
 const [postgresql, mongodb] = ['postgresql-uri.jwe','mongodb-uri.jwe']
 // ========================================= mongoose =========================================
@@ -24,10 +24,4 @@ export const mongooseSpotifEx = mongoose.createConnection(cryptHandler(mongodb))
 
 // ========================================= Sequelize =========================================
 
-// export const sequelizeConnect = new Sequelize(
-//     postgresql,
-//     {
-//         dialect: 'postgres',
-//         //port: parseInt(process.env.POSTGRES_PORT)
-//     }
-// )
+export const sequelizeConnect = new Sequelize(cryptHandler(postgresql), { dialect: 'postgres' })
