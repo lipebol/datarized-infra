@@ -28,9 +28,10 @@ export class SetHandler {
         } catch (err) { console.log(err) }
     }
 
-    fields() {
+    fields() { /// Está fraco!
         try {
             if (this.handler.about?.fields && !this.handler.data?.error) {
+                this.handler.fields = new Array()
                 const unwrap = (content) => {
                     return (
                         Array.isArray(content) ? content[0] : content
@@ -42,8 +43,13 @@ export class SetHandler {
                             node.typeCondition?.name.value
                             === this.handler.about.type
                         ) {
-                            this.handler.fields = unwrap(unwrap(node))
-                                .map(selection => selection.name.value)
+                            this.handler.fields.push(
+                                unwrap(unwrap(node)).map(selection => selection.name.value)
+                            )
+                        } else {
+                            this.handler.fields.push(
+                                ...unwrap(node).map(selection => selection.name.value)
+                            )
                         }
                     }
                 )
