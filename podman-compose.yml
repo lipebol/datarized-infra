@@ -1,9 +1,7 @@
 ### Never send your "passwords" in Production ###
 
 x-base: &common
-  build:
-    dockerfile: Dockerfile
-  restart: unless-stopped
+  restart: always
   networks:
     - podman
   deploy:
@@ -27,6 +25,7 @@ services:
   express-graphql-dev:
     <<: *common
     build:
+      dockerfile: Dockerfile
       context: ./express-graphql
       target: dev
     image: lipebol/express-graphql-dev
@@ -38,25 +37,28 @@ services:
     volumes:
       - ./express-graphql:/home/node/express-graphql
   
-  osrm-bicycle:
+  osrm-us-illinois-bicycle:
     <<: *common
-    build:
-      context: ./osrm-backend
-      target: osrm-bicycle
-    image: lipebol/osrm-backend
-    container_name: osrm-bicycle
+    image: ghcr.io/project-osrm/osrm-backend
+    container_name: osrm-us-illinois-bicycle
     tty: true
+    stdin_open: true
     command: |
-      bash -c "osrm-routed --algorithm mld /data/illinois-latest.osrm"
-    expose: 
-      - 5000
+      bash -c "osrm-routed --algorithm mld /opt/data/illinois-latest.osrm"
+    ports: 
+      - 5000:5000
     volumes:
-      - osrm-data:/data
+      - osrm-us-illinois-bicycle:/opt/data
+    deploy:
+      resources:
+        limits:
+          memory: 4096M
+    memswap_limit: 8192M
 
 networks:
   podman:
     external: true
 
 volumes:
-  osrm-data:
+  osrm-us-illinois-bicycle:
     external: true
