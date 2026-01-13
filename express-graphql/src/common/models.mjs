@@ -104,3 +104,26 @@ export const spotifExDaylists = mongooseSpotifEx.model(
         }, mongooseAddons
     ), 'daylists'
 )
+
+// ======================================================================
+
+import { sequelizeConnect } from './instances.mjs'
+import { DataTypes } from 'sequelize'
+
+export const DivvyBikes = sequelizeConnect.define(
+    "DivvyBikes", {
+        ride_id: { type: DataTypes.STRING },
+        rideable_type: { type: DataTypes.STRING },
+        started_at: { type: DataTypes.DATE },
+        ended_at: { type: DataTypes.DATE },
+        start_station_name: { type: DataTypes.STRING },
+        start_station_id: { type: DataTypes.STRING },
+        end_station_name: { type: DataTypes.STRING },
+        end_station_id: { type: DataTypes.STRING },
+        start_lat: { type: DataTypes.STRING },
+        start_lng: { type: DataTypes.STRING },
+        end_lat: { type: DataTypes.STRING },
+        end_lng: { type: DataTypes.STRING },
+        member_casual: { type: DataTypes.STRING }
+    }, { schema: 'divvybikes', tableName: 'gte_2020', timestamps: false }
+)
