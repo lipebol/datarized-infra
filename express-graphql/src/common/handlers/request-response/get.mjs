@@ -56,24 +56,30 @@ export class GetHandler {
     static async #GraphQL(handler, resolvername) {
         try {
             switch (resolvername) {
+                case 'DivvyBikes':
+                    handler
+                        .page()
+                        .fields()
+                        .sql()
+                    break
                 case 'spotifExArtists':
-                    handler.model()
+                    handler
                         .page()
                         .lookup('genres')
                         .nosql()
                     break
                 case 'spotifExAlbums':
-                    handler.model()
+                    handler
                         .fields()
                         .nosql()
                     break
                 case 'spotifExTracks':
-                    handler.model()
+                    handler
                         .lookup('artist', { path: 'genres' })
                         .nosql()
                     break
                 case 'spotifExDaylists':
-                    handler.model()
+                    handler
                         .lookup('track',[{ path: 'album' }, { path: 'artists', populate: { path: 'genres' }}])
                         .nosql()
                     break
