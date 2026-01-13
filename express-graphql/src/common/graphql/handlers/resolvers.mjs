@@ -4,6 +4,11 @@ class Resolvers {
 
     static create() {
         return {
+            async DivvyBikes(args, context, info) {
+                return await Controllers.dates(
+                    Resolvers.handler(args, context, info)
+                )
+            },
             async spotifyAPI(args, context, info) {
                 return await Controllers.multi(
                     Resolvers.handler(args, context, info)
@@ -33,7 +38,7 @@ class Resolvers {
     }
 
     static handler(args, context, info) {
-        return {
+        let objecthandler = {
             headers: context.headers,
             filter: Object.keys(args)[0].toString(),
             params: Object.values(args)[0],
@@ -45,6 +50,13 @@ class Resolvers {
                 fields: info.fieldNodes,
             }
         }
+
+        if ('between' in args) {
+            objecthandler.filter = { between: args.by }
+            objecthandler.params = args.between
+        }
+
+        return objecthandler
     }
 }
 
