@@ -1,3 +1,4 @@
+import { Op } from 'sequelize'
 import { ParamsHandler } from "./params.mjs"
 import { Externals } from './externals.mjs'
 
@@ -19,16 +20,7 @@ export class SetHandler {
         return this
     }
 
-    model() {
-        try {
-            this.handler.model = this.handler.name && this.handler.table ?
-                `_${(this.handler.name + this.handler.table).toUpperCase()}` :
-                this.handler.about.resolver
-            return this
-        } catch (err) { console.log(err) }
-    }
-
-    fields() { /// Está fraco!
+    fields() {
         try {
             if (this.handler.about?.fields && !this.handler.data?.error) {
                 this.handler.fields = new Array()
@@ -37,18 +29,19 @@ export class SetHandler {
                         Array.isArray(content) ? content[0] : content
                     ).selectionSet?.selections
                 }
+
                 unwrap(this.handler.about.fields).forEach(
                     (node) => {
-                        if (
-                            node.typeCondition?.name.value
-                            === this.handler.about.type
-                        ) {
+                        let nodename = node.typeCondition?.name.value
+                        if (nodename === this.handler.about.type) {
                             this.handler.fields.push(
-                                unwrap(unwrap(node)).map(selection => selection.name.value)
+                                ...unwrap(unwrap(node))
+                                    .map(selection => selection.name.value)
                             )
-                        } else {
+                        } else if (!['Errors', 'Info'].includes(nodename)) {
                             this.handler.fields.push(
-                                ...unwrap(node).map(selection => selection.name.value)
+                                ...unwrap(node)
+                                    .map(selection => selection.name.value)
                             )
                         }
                     }
@@ -75,8 +68,7 @@ export class SetHandler {
             if (this.handler.page && !this.handler.data?.error) {
                 this.handler.page = parseInt(this.handler.page) <= 0 ? 1 :
                     parseInt(this.handler.page)
-                this.handler.offset = (this.handler.page - 1)
-                    * this.handler.limit
+                this.handler.offset = (this.handler.page - 1) * this.handler.limit
             }
             return this
         } catch (err) { console.log(err) }
@@ -86,7 +78,26 @@ export class SetHandler {
         try {
             if (!this.handler.data?.error) {
                 this.handler.db = 'sql'
+                this.handler.sql = { limit: this.handler.limit } 
+                if (this.handler.filter && this.handler.params) {
+                    this.handler.sql.order = [[this.handler.filter, 'ASC']]
+                    this.handler.sql.where = (() => {
+                        if (this.handler.paramsType === 'dates') {
+                            const [start, end] = this.handler.params
+                            return {
+                                [this.handler.filter]: {
+                                    [Op.between]: [new Date(start), new Date(end)]
+                                }
+                            }
+                        }
+                        return { [this.handler.filter]: { [Op.in]: this.handler.params } }
+                    })()
+                }
+                if (this.handler.fields) { 
+                    this.handler.sql.attributes = this.handler.fields 
+                }
             }
+            return this
         } catch (err) { console.log(err) }
     }
 
