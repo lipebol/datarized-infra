@@ -5,35 +5,6 @@ import customParseFormat from 'dayjs/plugin/customParseFormat.js'
 
 export class ParamsHandler {
 
-    dates(request) {
-        try {
-            dayjs.extend(customParseFormat)
-            this.params = request.params.dates.split(process.env.SEPARATOR)
-            if (this.params) {
-                this.params.forEach((value) => { if (value !== '') { this.hasparams.push(value) } })
-            }
-            return this.hasparams.length === 2 || this.params[0] === 'max' ? true : false
-            if (this.params[0] === process.env.MAX) { request.params.dates = this.params[0] }
-            else {
-                this.params.forEach(
-                    (value) => {
-                        let resDayJs = dayjs(value, 'YYYY-MM-DD', true) /// <-- 'true', não passa para o próximo mês
-                        if (String(resDayJs.$d) === 'Invalid Date') {
-                            if (String(resDayJs.$y) === String(resDayJs.$M)) {
-                                this.validator.push('INVALID_FORMAT')
-                            } else { this.validator.push('INVALID_DATE') }
-                        } else { this.validator.push(true) }
-                    }
-                )
-                this.validator = this.validator.filter((i) => i !== true)
-                if (this.validator.length === 0) {
-                    if (dayjs(this.params[0]).isAfter(dayjs(this.params[1]))) { return 'END_DATE' }
-                } else { return this.validator[0] }
-            }
-            return request
-        } catch (err) { console.log(err) }
-    }
-
     static check(handler) {
         [
             handler.now,
@@ -47,11 +18,40 @@ export class ParamsHandler {
         if (handler.params) {
             switch (handler.paramsType) {
                 case 'dates':
-                    // tirado do service
-                    // if (params.dates) {
-                    //     [newObject.start, newObject.end] = params.dates.split(process.env.SEPARATOR)
-                    //     newObject.end = newObject.end.concat(' ','23:59:00')
-                    // }
+                    handler.params = (() => {
+                        if (
+                            handler.params.includes('') ||
+                            handler.params.length !== 2) { return 'invalid' }
+                        else {
+                            dayjs.extend(customParseFormat)
+                            let validator = new Array()
+
+                            handler.params.forEach(
+                                (value) => {
+                                    /// --- 'true', it won't carry over to the next month. ---
+                                    let resDayJs = dayjs(value, 'YYYY-MM-DD', true)
+                                    if (String(resDayJs.$d) === 'Invalid Date') {
+                                        /// ------ for custom message ------
+                                        // if (String(resDayJs.$y) === String(resDayJs.$M)) {
+                                        //     validator.push('INVALID_FORMAT')
+                                        // } else { validator.push('INVALID_DATE') }
+                                        /// --------------------------------
+                                        validator.push(false)
+                                    } else { validator.push(true) }
+                                }
+                            )
+
+                            if (
+                                validator.filter((date) => date !== true).length > 0 ||
+                                dayjs(handler.params[0])
+                                    .isAfter(dayjs(handler.params[1]))
+                            ) { return 'invalid' }
+
+                            handler.params[1] = handler.params[1].concat(' ', '23:59:59')
+                            handler.filter = handler.filter?.between
+                            return handler.params
+                        }
+                    })()
                     break
                 case 'multi':
                     handler.params = (() => {
@@ -86,14 +86,13 @@ export class ParamsHandler {
     static set(handler) {
         return [
             dayjs().format('YYYY-MM-DD'),
-            handler.between ? 'dates' : 'multi',
+            handler.filter?.between ? 'dates' : 'multi',
             handler.params === '*' ?
                 undefined : handler.params.split('|'),
             !handler.headers.authexternal ? undefined :
                 cryptHandler(handler.headers.authexternal),
             handler.params.includes('*') ? true : false,
-            handler.lookup === undefined ? /// in "Query"
-                true : handler.lookup,
+            handler.lookup || false, /// in "Query"
             handler.info ? 0 : 100
         ]
     }
