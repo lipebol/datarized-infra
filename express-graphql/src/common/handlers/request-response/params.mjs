@@ -93,7 +93,7 @@ export class ParamsHandler {
                 cryptHandler(handler.headers.authexternal),
             handler.params.includes('*') ? true : false,
             handler.lookup || false, /// in "Query"
-            handler.info ? 0 : 100
+            10000
         ]
     }
 
