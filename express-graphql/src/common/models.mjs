@@ -112,7 +112,7 @@ import { DataTypes } from 'sequelize'
 
 export const DivvyBikes = sequelizeConnect.define(
     "DivvyBikes", {
-        ride_id: { type: DataTypes.STRING },
+        ride_id: { type: DataTypes.STRING, primaryKey: true },
         rideable_type: { type: DataTypes.STRING },
         started_at: { type: DataTypes.DATE },
         ended_at: { type: DataTypes.DATE },
