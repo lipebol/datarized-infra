@@ -4,15 +4,16 @@ export class Service {
 
     static async sql(handler) {
         try {
-            const data = await models[handler.about.type]
-                .findAll(handler.sql)
 
-            return data.length === 0 ?
+            const data = handler.info ?
+                await models[handler.about.type].count(handler.sql) : 
+                await models[handler.about.type].findAll(handler.sql)
+ 
+            return !data ?
                 { error: { name: 'NotFound', status_code: 404 } } :
                 !handler.info ? data : {
-                    count: data.length,
-                    countpages: Math.ceil(
-                        parseFloat(data.length) / handler.limit
+                    count: data, countpages: Math.ceil(
+                        parseFloat(data) / handler.limit
                     )
                 }
         } catch (err) { console.log(err) }
@@ -24,13 +25,13 @@ export class Service {
             const data = await models[handler.about.type]
                 .find(handler.where).sort({ [handler.filter]: 'asc' })
                 .select(handler.fields).skip(handler.offset)
-                .limit(handler.limit).populate(handler.lookup).exec()
+                .limit(handler.info ? 500000 : handler.limit)
+                .populate(handler.lookup).exec()
 
             return data.length === 0 ?
                 { error: { name: 'NotFound', status_code: 404 } } :
                 !handler.info ? data : {
-                    count: data.length,
-                    countpages: Math.ceil(
+                    count: data.length, countpages: Math.ceil(
                         parseFloat(data.length) / handler.limit
                     )
                 }
