@@ -12,6 +12,7 @@ export const schemas = buildSchema(`
     type Info {
         total: Int
         pages: Int
+        columns: [String]
     }
 
 

@@ -14,6 +14,8 @@ export class Service {
                 !handler.info ? data : {
                     count: data, countpages: Math.ceil(
                         parseFloat(data) / handler.limit
+                    ), columns: Object.keys(
+                        models[handler.about.type].rawAttributes
                     )
                 }
         } catch (err) { console.log(err) }
