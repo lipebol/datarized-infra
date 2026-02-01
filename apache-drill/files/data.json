@@ -1,0 +1,206 @@
+[
+	{
+		"name" : "Laptop",
+		"price" : 900
+	},
+	{
+		"name" : "Mouse",
+		"price" : 20
+	},
+	{
+		"name" : "Monitor",
+		"price" : 150
+	},
+	{
+		"name" : "Keyboard",
+		"price" : 30
+	},
+	{
+		"name" : "Smartphone",
+		"price" : 700
+	},
+	{
+		"name" : "Headphones",
+		"price" : 80
+	},
+	{
+		"name" : "Tablet",
+		"price" : 300
+	},
+	{
+		"name" : "Printer",
+		"price" : 120
+	},
+	{
+		"name" : "Camera",
+		"price" : 500
+	},
+	{
+		"name" : "Speakers",
+		"price" : 60
+	},
+	{
+		"name" : "Router",
+		"price" : 50
+	},
+	{
+		"name" : "Webcam",
+		"price" : 40
+	},
+	{
+		"name" : "Charger",
+		"price" : 25
+	},
+	{
+		"name" : "Phone Case",
+		"price" : 15
+	},
+	{
+		"name" : "USB Cable",
+		"price" : 10
+	},
+	{
+		"name" : "External HDD",
+		"price" : 90
+	},
+	{
+		"name" : "Smartwatch",
+		"price" : 250
+	},
+	{
+		"name" : "SSD",
+		"price" : 200
+	},
+	{
+		"name" : "Graphics Card",
+		"price" : 450
+	},
+	{
+		"name" : "Chair",
+		"price" : 75
+	},
+	{
+		"name" : "Desk",
+		"price" : 220
+	},
+	{
+		"name" : "Notebook",
+		"price" : 1200
+	},
+	{
+		"name" : "Power Bank",
+		"price" : 35
+	},
+	{
+		"name" : "Game Console",
+		"price" : 400
+	},
+	{
+		"name" : "VR Headset",
+		"price" : 350
+	},
+	{
+		"name" : "Drone",
+		"price" : 800
+	},
+	{
+		"name" : "Projector",
+		"price" : 650
+	},
+	{
+		"name" : "Coffee Maker",
+		"price" : 90
+	},
+	{
+		"name" : "Juicer",
+		"price" : 45
+	},
+	{
+		"name" : "Microwave",
+		"price" : 110
+	},
+	{
+		"name" : "Refrigerator",
+		"price" : 1300
+	},
+	{
+		"name" : "Air Conditioner",
+		"price" : 1200
+	},
+	{
+		"name" : "Television",
+		"price" : 1000
+	},
+	{
+		"name" : "Soundbar",
+		"price" : 200
+	},
+	{
+		"name" : "MP3 Player",
+		"price" : 55
+	},
+	{
+		"name" : "Blender",
+		"price" : 65
+	},
+	{
+		"name" : "Toaster",
+		"price" : 25
+	},
+	{
+		"name" : "Oven",
+		"price" : 400
+	},
+	{
+		"name" : "Mixer",
+		"price" : 85
+	},
+	{
+		"name" : "Fan",
+		"price" : 70
+	},
+	{
+		"name" : "Iron",
+		"price" : 45
+	},
+	{
+		"name" : "Heater",
+		"price" : 95
+	},
+	{
+		"name" : "Vacuum Cleaner",
+		"price" : 150
+	},
+	{
+		"name" : "Hoodie",
+		"price" : 45
+	},
+	{
+		"name" : "Sweater",
+		"price" : 60
+	},
+	{
+		"name" : "Shoes",
+		"price" : 120
+	},
+	{
+		"name" : "Bicycle",
+		"price" : 300
+	},
+	{
+		"name" : "Treadmill",
+		"price" : 600
+	},
+	{
+		"name" : "Weights",
+		"price" : 200
+	},
+	{
+		"name" : "Subwoofer",
+		"price" : 2000
+	},
+	{
+		"name" : "Kindle",
+		"price" : 300
+	}
+]
