@@ -53,6 +53,24 @@ services:
         limits:
           memory: 4096M
     memswap_limit: 8192M
+  
+  apache-drill:
+    <<: *common
+    build:
+      dockerfile: Dockerfile
+      context: ./apache-drill
+    image: lipebol/apache-drill
+    container_name: apache-drill
+    tty: true
+    stdin_open: true
+    ports:
+      # - 8047:8047 # web/rest
+      - 31010:31010 # jdbc
+    volumes:
+      - ./apache-drill/conf/drill-override.conf:/opt/drill/conf/drill-override.conf
+      - ./apache-drill/conf/storage-plugins-override.conf:/opt/drill/conf/storage-plugins-override.conf
+      - ./apache-drill/files:/.data/files
+      - ./apache-drill/tables:/.data/tables
 
 networks:
   podman:
