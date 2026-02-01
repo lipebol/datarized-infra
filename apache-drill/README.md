@@ -3,9 +3,9 @@
 </h1>
 
 > **Directly: jdbc:drill:drillbit=<host_ip_address>:31010**
+
 > **ZooKeeper: jdbc:drill:zk=<zk-server-list>/drill/<clustername>**
 
-## Examples
 
 WITH file_drill AS (SELECT * FROM dfs.`/.data/files/data.json`)
 
