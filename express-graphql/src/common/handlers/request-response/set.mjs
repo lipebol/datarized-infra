@@ -25,27 +25,28 @@ export class SetHandler {
             if (this.handler.lookup) {
                 if (args && !this.handler.data?.error) {
 
-                    const [parent, childs] = args
-
                     const createpath = (value) => {
                         return { select: this.handler.arrow ? '-_id ' : '', path: value }
                     }
 
-                    this.handler.lookup = createpath(parent)
+                    const [parent, childs] = args
 
                     if (childs.length > 1) {
-                        this.handler.lookup.populate = new Array()
+                        this.childs = new Array()
                         for (const child of childs) {
                             if (child.includes('.')) {
-                                const [parent, childin] = child.split('.')
-                                this.handler.lookup.populate.push(
-                                    { ...createpath(parent), populate: createpath(childin) }
+                                const [child_parent, childin] = child.split('.')
+                                this.childs.push(
+                                    { ...createpath(child_parent), populate: createpath(childin) }
                                 )
                             } else {
-                                this.handler.lookup.populate.push(createpath(child))
+                                this.childs.push(createpath(child))
                             }
                         }
                     }
+
+                    this.handler.lookup = parent ?
+                        { ...createpath(parent), populate: this.childs } : this.childs
                 }
             }
             return this
