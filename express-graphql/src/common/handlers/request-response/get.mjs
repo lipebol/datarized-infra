@@ -60,14 +60,15 @@ export class GetHandler {
                         .fields()
                         .sql()
                     break
-                case 'spotifExArtists':
-                    handler
-                        .page()
-                        .lookup('genres')
-                        .nosql()
-                    break
                 case 'spotifExAlbums':
                     handler
+                        .lookup(null, ['available_markets', 'no_available_markets'])
+                        .fields()
+                        .nosql()
+                    break
+                case 'spotifExArtists':
+                    handler
+                        .lookup(null, ['genres'])
                         .fields()
                         .nosql()
                     break
@@ -81,6 +82,7 @@ export class GetHandler {
                     handler
                         .lookup('track', ['album', 'artists.genres'])
                         .fields()
+                        .page()
                         .nosql()
                     break
                 default:
