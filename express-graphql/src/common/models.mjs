@@ -1,6 +1,17 @@
 import { mongoose } from 'mongoose'
 import { mongooseAddons, mongooseSpotifEx } from './instances.mjs'
 
+
+const ISO3166 = mongooseSpotifEx.model(
+    'ISO3166', new mongoose.Schema(
+        {
+            _id: { type: mongoose.ObjectId, required: true },
+            name: { type: String, required: true },
+            code: { type: String, required: true }
+        }, mongooseAddons
+    ), 'ISO3166'
+)
+
 export const spotifExGenres = mongooseSpotifEx.model(
     'spotifExGenres', new mongoose.Schema(
         {
@@ -37,7 +48,6 @@ export const spotifExArtists = mongooseSpotifEx.model(
     )(), 'artists'
 )
 
-
 export const spotifExAlbums = mongooseSpotifEx.model(
     'spotifExAlbums', (
         () => {
@@ -48,8 +58,8 @@ export const spotifExAlbums = mongooseSpotifEx.model(
                     name: { type: String, required: true },
                     album_type: { type: String, required: true },
                     release_date: { type: String, required: true },
-                    available_markets: [{ type: String, required: true }],
-                    no_available_markets: [{ type: String, required: true }],
+                    available_markets: [{ type: mongoose.ObjectId, ref: 'ISO3166' }],
+                    no_available_markets: [{ type: mongoose.ObjectId, ref: 'ISO3166' }],
                     external_url: { type: String, required: true },
                     images: [
                         {
@@ -73,7 +83,6 @@ export const spotifExAlbums = mongooseSpotifEx.model(
         }
     )(), 'albums'
 )
-
 
 export const spotifExTracks = mongooseSpotifEx.model(
     'spotifExTracks', new mongoose.Schema(
