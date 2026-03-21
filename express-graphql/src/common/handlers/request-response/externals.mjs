@@ -7,7 +7,7 @@ export class Externals {
         }
     }
 
-    static async spotifyAPI(handler) {
+    static async SpotifyWebAPI(handler) {
 
         const [graphql, query, spotify] = [
             'http://localhost:3000/api/v2/graphql',
@@ -41,7 +41,7 @@ export class Externals {
                 }
 
 
-            if (!data.error && handler.fields.includes('album')) {
+            if (!data.error) {
                 let album = await Externals.get(
                     graphql, query('spotifExAlbums', 'albumid', track.album?.id)
                 ).then(albums => albums.data['spotifExAlbums'])
@@ -72,7 +72,7 @@ export class Externals {
             }
 
 
-            if (!data.error && handler.fields.includes('artists')) {
+            if (!data.error) {
                 let ids = track.artists?.map(artist => artist.id)
                 let artists = await Externals.get(
                     graphql, query('spotifExArtists', 'artistid', ids.join('|'))
