@@ -8,25 +8,17 @@ class Resolvers {
             async DivvyBikes(_, context, info) {
                 return await Controllers.dates(Resolvers.handler(context, info))
             },
-            async spotifyAPI(args, context, info) {
-                return await Controllers.multi(
-                    Resolvers.handler(args, context, info)
-                )
+            async SpotifyWebAPI(_, context, info) {
+                return await Controllers.multi(Resolvers.handler(context, info))
             },
-            async spotifExArtists(args, context, info) {
-                return await Controllers.multi(
-                    Resolvers.handler(args, context, info)
-                )
+            async spotifExArtists(_, context, info) {
+                return await Controllers.multi(Resolvers.handler(context, info))
             },
-            async spotifExAlbums(args, context, info) {
-                return await Controllers.multi(
-                    Resolvers.handler(args, context, info)
-                )
+            async spotifExAlbums(_, context, info) {
+                return await Controllers.multi(Resolvers.handler(context, info))
             },
-            async spotifExTracks(args, context, info) {
-                return await Controllers.multi(
-                    Resolvers.handler(args, context, info)
-                )
+            async spotifExTracks(_, context, info) {
+                return await Controllers.multi(Resolvers.handler(context, info))
             },
             async spotifExDaylists(_, context, info) {
                 return await Controllers.multi(Resolvers.handler(context, info))
