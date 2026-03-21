@@ -45,6 +45,14 @@ export const schemas = buildSchema(`
 
 
 
+    type ISO3166 {
+        id: ID!
+        name: String
+        code: String
+    }
+
+
+
 
     type _ImageField_ {
         url: String
@@ -77,18 +85,28 @@ export const schemas = buildSchema(`
     }
     union spotifExArtist = spotifExArtistId | spotifExArtistFields
     type spotifExArtists { data: [spotifExArtistFields] }
-    union spotifExArtists_ = spotifExArtists | Info | Errors
+    union spotifExArtists_ = spotifExArtists | Errors
 
 
-    type spotifExAlbumId { id: ID! }
-    type spotifExAlbumFields {
+    interface _spotifExAlbumFields_ {
         id: ID!
         albumid: String
         name: String
         album_type: String
         release_date: String
-        available_markets: [String]
-        no_available_markets: [String]
+        external_url: String
+        images: [_ImageField_]
+        total_tracks: Int
+        copyrights: [_CopyrightField_]
+        label: String
+    }
+    type spotifExAlbumId { id: ID! }
+    type spotifExAlbumFields implements _spotifExAlbumFields_ {
+        id: ID!
+        albumid: String
+        name: String
+        album_type: String
+        release_date: String
         external_url: String
         images: [_ImageField_]
         total_tracks: Int
@@ -96,8 +114,22 @@ export const schemas = buildSchema(`
         label: String
     }
     union spotifExAlbum = spotifExAlbumId | spotifExAlbumFields
-    type spotifExAlbums { data: [spotifExAlbumFields] }
-    union spotifExAlbums_ = spotifExAlbums | Info | Errors
+    type spotifExAlbumAllFields implements _spotifExAlbumFields_ {
+        id: ID!
+        albumid: String
+        name: String
+        album_type: String
+        release_date: String
+        available_markets: [ISO3166]
+        no_available_markets: [ISO3166]
+        external_url: String
+        images: [_ImageField_]
+        total_tracks: Int
+        copyrights: [_CopyrightField_]
+        label: String
+    }
+    type spotifExAlbums { data: [spotifExAlbumAllFields] }
+    union spotifExAlbums_ = spotifExAlbums | Errors
 
     
     type spotifExTrackId { id: ID! }
@@ -117,7 +149,7 @@ export const schemas = buildSchema(`
     }
     union spotifExTrack = spotifExTrackId | spotifExTrackFields | Errors
     type spotifExTracks { data: [spotifExTrackFields] }
-    union spotifExTracks_ = spotifExTracks | Info | Errors
+    union spotifExTracks_ = spotifExTracks | Errors
     
 
     type spotifExDaylistFields {
@@ -134,27 +166,22 @@ export const schemas = buildSchema(`
 
 
     type Query {
-        DivvyBikes(by: String, between: String, page: Int, info: Boolean): DivvyBikes_!
+        DivvyBikes
+        (by: String, between: String, info: Boolean, page: Int): DivvyBikes_!
 
-        spotifyAPI(trackid: String): spotifExTrack!
+        spotifExDaylists
+        (date: String, lookup: Boolean, arrow: Boolean, info: Boolean, page: Int): spotifExDaylists_!
 
-        spotifExArtists(
-            artistid: String, name: String, page: Int, 
-            info: Boolean, lookup: Boolean
-        ): spotifExArtists_!
+        spotifExTracks
+        (trackid: String, name: String, lookup: Boolean): spotifExTracks_!
 
-        spotifExAlbums(
-            albumid: String, name: String, page: Int, 
-            info: Boolean, lookup: Boolean
-        ): spotifExAlbums_!
+        spotifExAlbums
+        (albumid: String, name: String, lookup: Boolean): spotifExAlbums_!
 
-        spotifExTracks(
-            trackid: String, name: String, page: Int, 
-            info: Boolean, lookup: Boolean
-        ): spotifExTracks_!
+        spotifExArtists
+        (artistid: String, name: String, lookup: Boolean): spotifExArtists_!
 
-        spotifExDaylists(
-            date: String, page: Int, info: Boolean, lookup: Boolean, arrow: Boolean
-        ): spotifExDaylists_!
+        SpotifyWebAPI
+        (trackid: String): spotifExTrack!
     }
 `)
