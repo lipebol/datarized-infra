@@ -31,7 +31,7 @@ export class SetHandler {
 
                     const [parent, childs] = args
 
-                    if (childs.length > 1) {
+                    if (Array.isArray(childs)) {
                         this.childs = new Array()
                         for (const child of childs) {
                             if (child.includes('.')) {
@@ -56,8 +56,8 @@ export class SetHandler {
     fields() {
         try {
             if (this.handler.fields?.selections && !this.handler.data?.error) {
-                const fieldsByTypeName = (content) => { return content?.fieldsByTypeName }
-                const getTypeName = (content) => {
+                const FieldsByTypeName = (content) => { return content?.fieldsByTypeName }
+                const TypeName = (content) => {
                     let TypeName = Object.keys(content)
                     if (TypeName.length > 1) {
                         TypeName = TypeName.filter(type => type.includes('Fields'))
@@ -65,34 +65,39 @@ export class SetHandler {
                     return TypeName.toString()
                 }
 
-                let parent = fieldsByTypeName(this.handler.fields.selections)
-                let parentfields = parent[getTypeName(parent)]
-                this.handler.fields = Object.keys(parentfields)
+                this.parent = FieldsByTypeName(this.handler.fields.selections)
+                this.parentfields = this.parent[TypeName(this.parent)]
+                this.handler.fields = Object.keys(this.parentfields)
 
                 if (this.handler.arrow) { this.handler.fields.push('-_id') }
 
                 if (this.handler.lookup) {
 
-                    const setFields = (content) => { return Object.keys(content).join(' ') }
-                    const getPath = (content) => { return content?.path }
-
-                    parent = fieldsByTypeName(parentfields[getPath(this.handler.lookup)])
-                    if (parent) {
-                        parentfields = parent[getTypeName(parent)]
-                        const parentchilds = this.handler.lookup?.populate
-                        if (Array.isArray(parentchilds)) {
-                            this.handler.lookup.populate = new Array()
-                            for (const child of parentchilds) {
-                                let childfields = parentfields[getPath(child)]
-                                if (childfields) {
-                                    childfields = fieldsByTypeName(childfields)
-                                    child.select += setFields(childfields[getTypeName(childfields)])
-                                    this.handler.lookup.populate.push(child)
-                                }
+                    const Fields = (content) => { return Object.keys(content).join(' ') }
+                    const Path = (content) => { return content?.path }
+                    const Childs = (parentfields, childs) => {
+                        const transformchilds = new Array()
+                        for (const child of childs) {
+                            let childfields = parentfields[Path(child)]
+                            if (childfields) {
+                                childfields = FieldsByTypeName(childfields)
+                                child.select += Fields(childfields[TypeName(childfields)])
+                                transformchilds.push(child)
                             }
                         }
-                        this.handler.lookup.select += setFields(parentfields)
-                    } else { this.handler.lookup = parent }
+                        return transformchilds
+                    }
+
+                    if (!Array.isArray(this.handler.lookup)) {
+                        this.parent = FieldsByTypeName(this.parentfields[Path(this.handler.lookup)])
+                        this.parentfields = this.parent[TypeName(this.parent)]
+                        this.handler.lookup.select += Fields(this.parentfields)
+                        this.handler.lookup.populate = Childs(
+                            this.parentfields, this.handler.lookup?.populate
+                        )
+                    } else {
+                        this.handler.lookup = Childs(this.parentfields, this.handler.lookup)
+                    }
                 }
             }
             return this
