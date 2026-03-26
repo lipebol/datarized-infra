@@ -9,7 +9,7 @@ export class Externals {
 
     static async SpotifyWebAPI(handler) {
 
-        const [graphql, query, spotify] = [
+        const [graphql, query, spotify, datarizedcorev1] = [
             'http://localhost:3000/api/v2/graphql',
             (type, filter, id) => {
                 return {
@@ -20,12 +20,15 @@ export class Externals {
                     ...on Errors { error message status_code } }}`
                     }
                 }
-            }, `https://api.spotify.com/v1/tracks/${handler.params}`
+            }, `https://api.spotify.com/v1/tracks/${handler.params}`,
+            handler.headers.datarizedcoreversion === 'v1'
         ]
 
-        let track = await Externals.get(
-            graphql, query('spotifExTracks', handler.filter, handler.params)
-        ).then(tracks => tracks.data['spotifExTracks'])
+        if (datarizedcorev1) {
+            var track = await Externals.get(
+                graphql, query('spotifExTracks', handler.filter, handler.params)
+            ).then(tracks => tracks.data['spotifExTracks'])
+        }
 
         if (!track?.data) {
 
@@ -42,10 +45,12 @@ export class Externals {
 
 
             if (!data.error) {
-                let album = await Externals.get(
-                    graphql, query('spotifExAlbums', 'albumid', track.album?.id)
-                ).then(albums => albums.data['spotifExAlbums'])
 
+                if (datarizedcorev1) {
+                    var album = await Externals.get(
+                        graphql, query('spotifExAlbums', 'albumid', track.album?.id)
+                    ).then(albums => albums.data['spotifExAlbums'])
+                }
 
                 if (!album?.data) {
                     album = await Externals.get(
@@ -73,10 +78,14 @@ export class Externals {
 
 
             if (!data.error) {
+
                 let ids = track.artists?.map(artist => artist.id)
-                let artists = await Externals.get(
-                    graphql, query('spotifExArtists', 'artistid', ids.join('|'))
-                ).then(artists => artists.data['spotifExArtists'])
+
+                if (datarizedcorev1) {
+                    var artists = await Externals.get(
+                        graphql, query('spotifExArtists', 'artistid', ids.join('|'))
+                    ).then(artists => artists.data['spotifExArtists'])
+                }
 
                 let newartists = artists?.error ? track.artists?.map(artist => artist.href) :
                     (() => {
@@ -124,7 +133,7 @@ export class Externals {
 
 
     static async get(endpoint, { method, body, token }) {
-        let args = { signal : AbortSignal.timeout(20000) }
+        let args = { signal: AbortSignal.timeout(20000) }
         if (method) { args.method = method }
         if (body) {
             args.headers = { 'Content-Type': 'application/json' }
