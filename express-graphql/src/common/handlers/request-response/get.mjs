@@ -86,7 +86,7 @@ export class GetHandler {
                         .nosql()
                     break
                 default:
-                    handler.external().fields()
+                    handler.external()
             }
             return await handler.build()
         } catch (err) { console.log(err) }
