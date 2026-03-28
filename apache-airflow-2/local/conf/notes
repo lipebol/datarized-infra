@@ -1,0 +1,2 @@
+incus config device add datarized-infra datarized-infra::apache-airflow-2::dags disk source=/srv/widgEx/my-flows path=/home/lipebol/datarized-infra/apache-airflow-2/local/dags
+incus config device add datarized-infra datarized-infra::apache-airflow-2::common disk source=/srv/widgEx/common path=/home/lipebol/datarized-infra/apache-airflow-2/local/dags/common
