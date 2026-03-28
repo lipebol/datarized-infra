@@ -93,6 +93,69 @@ services:
           memory: 4096M
     memswap_limit: 8192M
 
+  rstudio:
+    <<: *common
+    image: docker.io/rocker/rstudio
+    container_name: rstudio
+    environment:
+      PASSWORD: RSTUDIO_PASSWORD
+    ports:
+      - 8888:8787
+    volumes:
+      - ./rstudio:/srv/rstudio
+    working_dir: /srv/rstudio
+    deploy:
+      resources:
+        limits:
+          memory: 4096M
+    memswap_limit: 8192M
+
+  apache-kudu-master:
+    <<: *common
+    command: master
+    image: docker.io/apache/kudu:latest
+    container_name: apache-kudu-master
+    ports:
+      - 7051:7051
+    environment:
+      - >
+        MASTER_ARGS=
+        --use_hybrid_clock=false
+        --unlock_unsafe_flags=true
+        --default_num_replicas=1
+
+  apache-kudu-tserver:
+    <<: *common
+    command: tserver
+    image: docker.io/apache/kudu:latest
+    container_name: apache-kudu-tserver
+    ports:
+      - 7050:7050
+    environment:
+      - >
+        TSERVER_ARGS=
+        --use_hybrid_clock=false
+        --unlock_unsafe_flags=true
+        --tserver_master_addrs=host.containers.internal:7051
+    depends_on:
+      - apache-kudu-master
+
+  apache-kudu-impala:
+    <<: *common
+    command: impala
+    image: docker.io/apache/kudu:impala-latest
+    container_name: apache-kudu-impala
+    ports:
+      - 21050:21050
+    environment:
+      - KUDU_MASTERS=host.containers.internal:7051
+    deploy:
+      resources:
+        limits:
+          memory: 4096M
+    depends_on:
+      - apache-kudu-tserver
+
 networks:
   podman:
     external: true
