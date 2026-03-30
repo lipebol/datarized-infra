@@ -140,7 +140,7 @@ export const schemas = buildSchema(`
         album: spotifExAlbum
         artists: [spotifExArtist]
         url: String
-        duration_ms: String
+        duration_ms: Int
         popularity: Int
         explicit: Boolean
         track_number: Int
