@@ -1,0 +1,255 @@
+                                                        /* PRE CONFIGURATION */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+    outline: none;
+    resize: none;
+    font-family:'Poppins', sans-serif;
+    font-weight: 500;
+    color: inherit;
+}
+
+:root {
+    --primary-color: #ffffff;
+    --second-color: #242526;
+    --third-color:#ccc;
+}
+                                                        /* GLOBAL */
+html, body {
+    height: 100%;
+}
+
+body {
+    font: 15px/1.5 'Poppins', sans-serif;
+    background: var(--second-color);
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1; 
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+.container img {
+    width: 80px;
+    height: 80px;
+}
+                                                        /* HEADER */
+header {
+    padding-top: 30px;
+    color: var(--primary-color);
+}
+
+header li a {
+    font-size: 16px;
+}
+
+header li {
+    float: left;
+    display: inline;
+    padding: 0 20px;
+}
+
+
+header nav {
+    float: right;
+    margin: 30px;
+}
+
+.container p {
+    float: right;
+    font-weight: 300;
+    margin-top: 5px;
+    margin-right: 100px;
+    font-size: 11px;
+}
+
+.container input {
+    margin-right: 85px;
+    float: right;
+    text-align: center;
+    font-weight: 300;
+    padding: 5px;
+    color: var(--second-color);
+    font-size: 12px;
+    width: 160px;
+    height: 30px;
+    border-radius: 5px;
+    caret-color: transparent;
+    border: none;
+}
+
+#section-footer {
+    display: none;
+}
+
+#loading-msg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    color: var(--primary-color);
+    background: var(--second-color);
+    font-size: 16px;
+}
+
+.dots {
+  display: inline-block;
+  width: 25px;
+  text-align: left;
+}
+
+.dots::after {
+  content: '';
+  animation: ellipsis 1.5s infinite;
+}
+
+@keyframes ellipsis {
+  0%   { content: ''; }
+  25%  { content: '.'; }
+  50%  { content: '..'; }
+  75%  { content: '...'; }
+  100% { content: ''; }
+}
+
+/*-------- By Ananya Neogi in: https://codepen.io/ananyaneogi/pen/zXZyMP --------*/
+.theme-switch-wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: 2px;
+  
+  span {
+    margin-left: 10px;
+    font-size: 0.8rem;
+    margin-right: 10px;
+  }
+}
+
+.theme-switch {
+  display: inline-block;
+  height: 19px;
+  position: relative;
+  width: 45px;
+}
+
+.theme-switch input {
+  display:none;
+}
+
+.slider {
+  background-color: var(--third-color);
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+}
+
+.slider:before {
+  background-color: var(--primary-color);
+  bottom: 4px;
+  content: "";
+  height: 11px;
+  left: 4px;
+  position: absolute;
+  transition: .4s;
+  width: 11px;
+}
+
+input:checked + .slider {
+  background-color: #66bb6a;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+/*----------------------------------------------------------------------------*/
+
+
+                                                        /* MEDIA QUERIES */
+@media (max-width: 891px) {
+    header {
+        padding-top: 15px;
+    }
+    
+    header .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .container img {
+        float: none; 
+        margin: 0 auto;
+        width: 80px;
+        height: 80px;
+    }
+
+    .container nav {
+        display: none;
+    }
+
+    .container p, .container input {
+        margin-right: 0;
+    }
+
+    .container input {
+        margin-top: 10px;
+    }
+
+    .social {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .social li a {
+        display: inline-block;
+        filter: invert(1);
+        transform: scale(0.5);
+        transition: 0.5s;
+    }
+    .social li a:hover {
+        transform: scale(0.5) translateY(-20px);
+    }
+
+    .social li a img {
+        margin-right: 50px;
+        width: 40px;
+    }
+
+    #section-footer {
+        display: block;
+        background: var(--second-color);
+    }
+
+    .footer{
+        margin-top: 5px;
+        margin-left: 20px;
+    }
+
+    #loading-msg {
+        font-size: 12px;
+    }
+
+    .theme-switch-wrapper {
+        margin-top: 5px;
+        margin-left: 0;
+
+        span {
+            display: none;
+        }
+    }
+}
